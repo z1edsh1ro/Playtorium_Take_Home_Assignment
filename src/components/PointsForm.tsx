@@ -48,7 +48,7 @@ const PointsForm: React.FC = () => {
         </form>
       )}
       <p className="text-xs text-gray-500 mt-2">
-        You have {points.available} points available. Each point is worth THB {points.conversionRate.toFixed(2)}.
+        You have {points.available} points available.
       </p>
     </div>
   );
