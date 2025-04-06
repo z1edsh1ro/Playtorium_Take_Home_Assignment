@@ -1,24 +1,15 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Tag, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { availableCoupons } from '../data/products';
 
 const CouponForm: React.FC = () => {
-  const [couponCode, setCouponCode] = useState('');
   const { applyCoupon, appliedCoupon, removeCoupon } = useShop();
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (couponCode.trim()) {
-      applyCoupon(couponCode.trim().toUpperCase());
-    }
-  };
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
-      <h3 className="font-medium mb-2">Apply Coupon</h3>
+      <h3 className="font-medium mb-3">Available Coupons</h3>
       {appliedCoupon ? (
         <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded p-3">
           <div className="flex items-center">
@@ -32,19 +23,24 @@ const CouponForm: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={couponCode}
-            onChange={(e) => setCouponCode(e.target.value)}
-            placeholder="Enter coupon code"
-            className="flex-1"
-          />
-          <Button type="submit" disabled={!couponCode.trim()}>Apply</Button>
-        </form>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {availableCoupons.map((coupon) => (
+            <button
+              key={coupon.code}
+              onClick={() => applyCoupon(coupon.code)}
+              className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-colors"
+            >
+              <div className="flex items-center">
+                <Tag className="h-4 w-4 text-red-600 mr-2" />
+                <div>
+                  <div className="font-medium">{coupon.code}</div>
+                  <div className="text-sm text-gray-500">{coupon.discountPercentage}% off</div>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       )}
-      <p className="text-xs text-gray-500 mt-2">
-        Try using "SAVE10" or "SAVE20" for discounts!
-      </p>
     </div>
   );
 };
