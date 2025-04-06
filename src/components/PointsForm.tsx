@@ -26,7 +26,7 @@ const PointsForm: React.FC = () => {
           <div className="flex items-center">
             <BadgePercent className="h-4 w-4 text-green-600 mr-2" />
             <span className="text-sm">
-              <span className="font-medium">{points.pointsToUse} points</span> - ${pointsDiscount.toFixed(2)} discount applied
+              <span className="font-medium">{points.pointsToUse} points</span> - THB {pointsDiscount.toFixed(2)} discount applied
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={resetPoints} className="h-8 w-8 p-0">
@@ -48,7 +48,7 @@ const PointsForm: React.FC = () => {
         </form>
       )}
       <p className="text-xs text-gray-500 mt-2">
-        You have {points.available} points available. Each point is worth ${points.conversionRate.toFixed(2)}.
+        You have {points.available} points available. Each point is worth THB {points.conversionRate.toFixed(2)}.
       </p>
     </div>
   );

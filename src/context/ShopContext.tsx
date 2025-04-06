@@ -27,8 +27,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [points, setPoints] = useState<Points>({
     available: 500, // Example: Start with 500 points
-    pointsToUse: 0,
-    conversionRate: 0.01 // $0.01 per point (100 points = $1)
+    pointsToUse: 0
   });
 
   const addToCart = (product: Product) => {
@@ -109,7 +108,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ? subtotal * (appliedCoupon.discountPercentage / 100)
     : 0;
 
-  const pointsDiscount = points.pointsToUse * points.conversionRate;
+  const pointsDiscount = points.pointsToUse;
 
   const total = Math.max(subtotal - discount - pointsDiscount, 0);
 

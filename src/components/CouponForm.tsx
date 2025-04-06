@@ -20,9 +20,9 @@ const CouponForm: React.FC = () => {
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
       <h3 className="font-medium mb-2">Apply Coupon</h3>
       {appliedCoupon ? (
-        <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded p-3">
+        <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded p-3">
           <div className="flex items-center">
-            <Tag className="h-4 w-4 text-blue-600 mr-2" />
+            <Tag className="h-4 w-4 text-red-600 mr-2" />
             <span className="text-sm">
               <span className="font-medium">{appliedCoupon.code}</span> - {appliedCoupon.discountPercentage}% discount applied
             </span>

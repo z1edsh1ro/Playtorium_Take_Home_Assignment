@@ -26,13 +26,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <CardTitle className="text-lg">{product.name}</CardTitle>
       </CardHeader>
       <CardContent className="pb-2 px-4 flex-grow">
-        <p className="text-gray-500 text-sm mb-2">{product.description}</p>
-        <p className="font-bold text-lg">${product.price.toFixed(2)}</p>
+        <p className="text-gray-500 text-sm mb-2">{product.category}</p>
+        <p className="font-bold text-lg">THB {product.price.toFixed(2)}</p>
       </CardContent>
       <CardFooter className="pt-0 pb-4 px-4">
         <Button 
           onClick={() => addToCart(product)} 
-          className="w-full bg-blue-600 hover:bg-blue-700"
+          className="w-full bg-red-600 hover:bg-red-700"
         >
           <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
         </Button>

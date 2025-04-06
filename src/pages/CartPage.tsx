@@ -17,8 +17,8 @@ const CartPage: React.FC = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center mb-8">
-          <Link to="/" className="flex items-center text-blue-600 hover:text-blue-800">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Continue Shopping
+          <Link to="/" className="flex items-center text-red-600 hover:text-red-800">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 ml-auto">Your Cart</h1>
         </div>
@@ -42,27 +42,27 @@ const CartPage: React.FC = () => {
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span>THB {subtotal.toFixed(2)}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Coupon Discount</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      <span>-THB {discount.toFixed(2)}</span>
                     </div>
                   )}
                   {pointsDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Points Discount</span>
-                      <span>-${pointsDiscount.toFixed(2)}</span>
+                      <span>-THB {pointsDiscount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-bold text-lg pt-2 border-t">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>THB {total.toFixed(2)}</span>
                   </div>
                 </div>
                 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button className="w-full bg-red-600 hover:bg-red-700">
                   <ShoppingBag className="mr-2 h-4 w-4" /> Checkout
                 </Button>
               </div>
@@ -74,7 +74,7 @@ const CartPage: React.FC = () => {
             <h2 className="text-2xl font-medium mb-2">Your cart is empty</h2>
             <p className="text-gray-500 mb-6">Looks like you haven't added anything to your cart yet.</p>
             <Link to="/">
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-red-600 hover:bg-red-700">
                 Continue Shopping
               </Button>
             </Link>
