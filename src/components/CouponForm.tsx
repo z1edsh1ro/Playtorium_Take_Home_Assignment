@@ -1,11 +1,16 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Tag, X } from 'lucide-react';
+import { Tag, X, Percent, DollarSign } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { coupons } from '../data/coupons';
 
 const CouponForm: React.FC = () => {
   const { applyCoupon, appliedCoupon, removeCoupon } = useShop();
+
+  const percentageCoupons = coupons.filter(coupon => coupon.type === 'percentage');
+  const fixedCoupons = coupons.filter(coupon => coupon.type === 'fixed');
+
+  console.log(appliedCoupon);
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
@@ -15,7 +20,9 @@ const CouponForm: React.FC = () => {
           <div className="flex items-center">
             <Tag className="h-4 w-4 text-red-600 mr-2" />
             <span className="text-sm">
-              <span className="font-medium">{appliedCoupon.code}</span> - {appliedCoupon.discountPercentage}% discount applied
+              <span className="text-sm font-medium">{appliedCoupon.code}</span> - save {
+                (appliedCoupon.type === 'fixed') ? `THB ${appliedCoupon.value}` : `${appliedCoupon.value} %`
+              }
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={removeCoupon} className="h-8 w-8 p-0">
@@ -23,22 +30,48 @@ const CouponForm: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {coupons.map((coupon) => (
-            <button
-              key={coupon.code}
-              onClick={() => applyCoupon(coupon.code)}
-              className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-colors"
-            >
-              <div className="flex items-center">
-                <Tag className="h-4 w-4 text-red-600 mr-2" />
-                <div>
-                  <div className="font-medium">{coupon.code}</div>
-                  <div className="text-sm text-gray-500">{coupon.discountPercentage}% off</div>
-                </div>
-              </div>
-            </button>
-          ))}
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-gray-500 mb-2">Percentage Discounts</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {percentageCoupons.map((coupon) => (
+                <button
+                  key={coupon.code}
+                  onClick={() => applyCoupon(coupon.code)}
+                  className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <Percent className="h-4 w-4 text-red-600 mr-2" />
+                    <div>
+                      <div className="text-sm font-medium">{coupon.code}</div>
+                      <div className="text-sm text-gray-500">save {coupon.value} %</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-sm font-medium text-gray-500 mb-2">Fixed Amount Discounts</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {fixedCoupons.map((coupon) => (
+                <button
+                  key={coupon.code}
+                  onClick={() => applyCoupon(coupon.code)}
+                  className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <DollarSign className="h-4 w-4 text-red-600 mr-2" />
+                    <div className='flex flex-col justify-start'>
+                      <div className="text-sm font-medium">{coupon.code}</div>
+                      <div className="text-sm text-gray-500 mr">save {coupon.value} THB</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

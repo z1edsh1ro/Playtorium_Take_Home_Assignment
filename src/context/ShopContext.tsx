@@ -66,7 +66,10 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const coupon = coupons.find(c => c.code === code);
     if (coupon) {
       setAppliedCoupon(coupon);
-      toast.success(`Applied coupon: ${code} (${coupon.discountPercentage}% off)`);
+      const discountText = coupon.type === 'percentage' 
+        ? `${coupon.value}% off` 
+        : `$${coupon.value} off`;
+      toast.success(`Applied coupon: ${code} (${discountText})`);
       return true;
     }
     toast.error('Invalid coupon code');
@@ -105,7 +108,9 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 
   const discount = appliedCoupon
-    ? subtotal * (appliedCoupon.discountPercentage / 100)
+    ? appliedCoupon.type === 'percentage'
+      ? subtotal * (appliedCoupon.value / 100)
+      : appliedCoupon.value
     : 0;
 
   const pointsDiscount = points.pointsToUse;

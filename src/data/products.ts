@@ -1,4 +1,3 @@
-
 import { Product } from "../types/shop";
 
 export const products: Product[] = [

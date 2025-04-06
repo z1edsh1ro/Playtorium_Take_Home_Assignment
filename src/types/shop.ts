@@ -1,4 +1,3 @@
-
 export interface Product {
   id: number;
   name: string;
@@ -14,7 +13,8 @@ export interface CartItem {
 
 export interface Coupon {
   code: string;
-  discountPercentage: number;
+  type: 'percentage' | 'fixed';
+  value: number;
 }
 
 export interface Points {
