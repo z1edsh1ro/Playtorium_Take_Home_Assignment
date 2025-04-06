@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Product, CartItem, Coupon, Points } from '../types/shop';
-import { availableCoupons } from '../data/products';
+import { coupons } from '../data/coupons';
 import { toast } from 'sonner';
 
 interface ShopContextType {
@@ -63,7 +63,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const applyCoupon = (code: string): boolean => {
-    const coupon = availableCoupons.find(c => c.code === code);
+    const coupon = coupons.find(c => c.code === code);
     if (coupon) {
       setAppliedCoupon(coupon);
       toast.success(`Applied coupon: ${code} (${coupon.discountPercentage}% off)`);
@@ -138,8 +138,10 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useShop = () => {
   const context = useContext(ShopContext);
+
   if (context === undefined) {
     throw new Error('useShop must be used within a ShopProvider');
   }
+  
   return context;
 };

@@ -20,7 +20,6 @@ const CartPage: React.FC = () => {
           <Link to="/" className="flex items-center text-red-600 hover:text-red-800">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 ml-auto">Your Cart</h1>
         </div>
 
         {cart.length > 0 ? (

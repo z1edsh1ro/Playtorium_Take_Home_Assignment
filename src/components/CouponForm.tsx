@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tag, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import { availableCoupons } from '../data/products';
+import { coupons } from '../data/coupons';
 
 const CouponForm: React.FC = () => {
   const { applyCoupon, appliedCoupon, removeCoupon } = useShop();
@@ -24,7 +24,7 @@ const CouponForm: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {availableCoupons.map((coupon) => (
+          {coupons.map((coupon) => (
             <button
               key={coupon.code}
               onClick={() => applyCoupon(coupon.code)}

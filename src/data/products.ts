@@ -1,5 +1,5 @@
 
-import { Product, Coupon } from "../types/shop";
+import { Product } from "../types/shop";
 
 export const products: Product[] = [
   {
@@ -57,16 +57,5 @@ export const products: Product[] = [
     price: 799,
     image: "/placeholder.svg",
     category: "electronics",
-  }
-];
-
-export const availableCoupons: Coupon[] = [
-  {
-    code: "SAVE10",
-    discountPercentage: 10
-  },
-  {
-    code: "SAVE20",
-    discountPercentage: 20
   }
 ];
