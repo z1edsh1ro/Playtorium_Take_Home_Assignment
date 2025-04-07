@@ -27,7 +27,7 @@ const OnTopCouponForm: React.FC = () => {
             <CategoryTag className="h-4 w-4 text-red-600 mr-2" />
             <span className="text-sm">
               <span className="text-sm font-medium">{appliedCoupons.onTop.code}</span> - {
-                appliedCoupons.onTop.description || `${appliedCoupons.onTop.amount}% off ${appliedCoupons.onTop.category} items`
+                appliedCoupons.onTop.description
               }
             </span>
           </div>
@@ -75,7 +75,7 @@ const OnTopCouponForm: React.FC = () => {
                   <CategoryTag className="h-4 w-4 text-red-600 mr-2" />
                   <div>
                     <div className="text-sm font-medium">{coupon.code}</div>
-                    <div className="text-sm text-gray-900">({coupon.category})</div>
+                    <div className="text-sm text-gray-900">{coupon.category} cat.</div>
                     <div className="text-sm text-gray-500">
                       {coupon.description}
                       {!isAvailable && (
