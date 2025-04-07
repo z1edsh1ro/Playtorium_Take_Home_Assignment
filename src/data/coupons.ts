@@ -27,30 +27,30 @@ export const coupons: Coupon[] = [
   },
   {
     code: "PLAYTORIUM5",
-    type: "category",
+    type: "onTop",
     value: 20,
     category: "food",
-    description: "discount 20% food category"
+    description: "discount 20%"
   },
   {
     code: "PLAYTORIUM6",
-    type: "category",
+    type: "onTop",
     value: 15,
     category: "electronics",
-    description: "discount 15% electronics category"
+    description: "discount 15%"
   },
   {
     code: "PLAYTORIUM7",
-    type: "category",
+    type: "onTop",
     value: 25,
     category: "clothing",
-    description: "discount 25% clothing category"
+    description: "discount 25%"
   },
   {
     code: "PLAYTORIUM8",
-    type: "category",
+    type: "onTop",
     value: 10,
     category: "accessories",
-    description: "discount 10% accessories category"
+    description: "discount 10%"
   }
 ];

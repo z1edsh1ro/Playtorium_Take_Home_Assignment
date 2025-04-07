@@ -6,7 +6,15 @@ import { useShop } from '../context/ShopContext';
 
 const PointsForm: React.FC = () => {
   const [pointsToUse, setPointsToUse] = useState<string>('');
-  const { points, applyPoints, resetPoints, pointsDiscount, canUsePoints, subtotal } = useShop();
+  
+  const { 
+    points, 
+    applyPoints, 
+    resetPoints, 
+    pointsDiscount, 
+    canUsePoints, 
+    subtotal 
+  } = useShop();
   
   // Calculate maximum points that can be used (20% of subtotal)
   const maxPointsDiscount = Math.floor(subtotal * 0.2);
@@ -35,14 +43,14 @@ const PointsForm: React.FC = () => {
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
-      <h3 className="font-medium mb-2">Use Reward Points</h3>
+      <h3 className="font-medium mb-2">Use Points</h3>
       
       {!canUsePoints && (
         <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
           <div className="flex items-center">
             <AlertCircle className="h-4 w-4 text-yellow-600 mr-2" />
             <span className="text-sm text-yellow-700">
-              Reward points cannot be used with category coupons
+              Points cannot be used with on top coupons
             </span>
           </div>
         </div>

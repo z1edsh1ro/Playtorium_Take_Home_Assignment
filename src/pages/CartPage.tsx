@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import CartItem from '../components/CartItem';
 import CouponForm from '../components/CouponForm';
-import CategoryCouponForm from '../components/CategoryCouponForm';
+import OnTopCouponForm from '../components/OnTopCouponForm';
 import PointsForm from '../components/PointsForm';
 import { useShop } from '../context/ShopContext';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ const CartPage: React.FC = () => {
                 
                 <CouponForm />
                 
-                <CategoryCouponForm />
+                <OnTopCouponForm />
                 
                 <PointsForm />
                 

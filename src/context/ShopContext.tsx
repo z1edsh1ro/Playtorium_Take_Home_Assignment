@@ -14,7 +14,7 @@ interface ShopContextType {
   // Coupon operations
   appliedCoupons: AppliedCoupons;
   applyCoupon: (code: string) => boolean;
-  removeCoupon: (type: 'coupon' | 'category') => void;
+  removeCoupon: (type: 'coupon' | 'onTop') => void;
   
   // Points operations
   points: Points;
@@ -32,7 +32,7 @@ interface ShopContextType {
   // Availability checks
   canUsePoints: boolean;
   canUseCategoryCoupon: boolean;
-  availableCategoryCoupons: Coupon[];
+  availableOnTopCoupons: Coupon[];
 }
 
 // Create context
@@ -79,28 +79,31 @@ const useCartOperations = () => {
 const useCouponOperations = (points: Points, appliedCoupons: AppliedCoupons, setAppliedCoupons: React.Dispatch<React.SetStateAction<AppliedCoupons>>) => {
   const applyCoupon = (code: string): boolean => {
     const coupon = coupons.find(coupon => coupon.code === code);
-    if (!coupon) return false;
 
-    // Check if coupon is already applied
-    if (
-      (coupon.type === 'category' && appliedCoupons.onTop?.code === code) ||
-      ((coupon.type === 'percentage' || coupon.type === 'fixed') && appliedCoupons.coupon?.code === code)
-    ) {
+    // when coupon not find
+    if (!coupon) 
+      return false;
+
+    // when both coupon type is already applied
+    if (appliedCoupons.coupon !== null && appliedCoupons.onTop !== null) {
       return false;
     }
 
-    // Apply coupon based on type
-    if (coupon.type === 'category') {
-      if (points.pointsToUse > 0) return false;
-      setAppliedCoupons(prev => ({ ...prev, onTop: coupon }));
-    } else {
+    // when coupons type is not on top
+    if (coupon.type !== 'onTop') {
       setAppliedCoupons(prev => ({ ...prev, coupon }));
+      return true;
     }
-    
+
+    // when coupons type is on top, cannot use point
+    if (points.pointsToUse > 0) 
+      return false;
+
+    setAppliedCoupons(prev => ({ ...prev, onTop: coupon }));
     return true;
   };
 
-  const removeCoupon = (type: 'coupon' | 'category') => {
+  const removeCoupon = (type: 'coupon' | 'onTop') => {
     setAppliedCoupons(prev => ({
       ...prev,
       [type]: null
@@ -210,13 +213,15 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Availability checks
   const canUsePoints = appliedCoupons.onTop === null;
-  const canUseCategoryCoupon = points.pointsToUse === 0;
+  const canUseCategoryCoupon = (points.pointsToUse === 0);
 
-  // Available category coupons
-  const availableCategoryCoupons = useMemo(() => {
-    const categoryCoupons = coupons.filter(coupon => coupon.type === 'category');
+  // Available on top coupons
+  const availableOnTopCoupons = useMemo(() => {
+    const onTopCoupons = coupons.filter(coupon => coupon.type === 'onTop');
+
     const cartCategories = [...new Set(cart.map(item => item.product.category.toLowerCase()))];
-    return categoryCoupons.filter(coupon => 
+    
+    return onTopCoupons.filter(coupon => 
       cartCategories.includes(coupon.category.toLowerCase())
     );
   }, [cart]);
@@ -244,7 +249,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Availability checks
     canUsePoints,
     canUseCategoryCoupon,
-    availableCategoryCoupons
+    availableOnTopCoupons
   };
 
   return (

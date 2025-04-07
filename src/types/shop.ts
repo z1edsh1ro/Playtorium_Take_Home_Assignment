@@ -13,7 +13,7 @@ export interface CartItem {
 
 export interface Coupon {
   code: string;
-  type: 'percentage' | 'fixed' | 'category';
+  type: 'percentage' | 'fixed' | 'onTop';
   value: number;
   category?: string;
   description?: string;

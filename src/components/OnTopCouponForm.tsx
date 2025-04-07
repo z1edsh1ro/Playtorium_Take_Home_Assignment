@@ -3,37 +3,36 @@ import { Tag as CategoryTag, Info } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { coupons } from '../data/coupons';
 
-const CategoryCouponForm: React.FC = () => {
+const OnTopCouponForm: React.FC = () => {
   const { 
     applyCoupon, 
     appliedCoupons, 
     removeCoupon, 
     canUseCategoryCoupon,
-    availableCategoryCoupons
+    availableOnTopCoupons
   } = useShop();
 
-  const categoryCoupons = coupons.filter(coupon => coupon.type === 'category');
+  const categoryCoupons = coupons.filter(coupon => coupon.type === 'onTop');
   
   // Get the codes of available category coupons
-  const availableCategoryCodes = availableCategoryCoupons.map(coupon => coupon.code);
+  const availableCategoryCodes = availableOnTopCoupons.map(coupon => coupon.code);
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
-      <h3 className="font-medium mb-3">Category Discounts</h3>
+      <h3 className="font-medium mb-3">On Top Coupons</h3>
       
-      {/* Applied Category Coupon Display */}
-      {appliedCoupons.category && (
+      {appliedCoupons.onTop && (
         <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded p-3 mb-4">
           <div className="flex items-center">
             <CategoryTag className="h-4 w-4 text-green-600 mr-2" />
             <span className="text-sm">
-              <span className="text-sm font-medium">{appliedCoupons.category.code}</span> - {
-                appliedCoupons.category.description || `${appliedCoupons.category.value}% off ${appliedCoupons.category.category} items`
+              <span className="text-sm font-medium">{appliedCoupons.onTop.code}</span> - {
+                appliedCoupons.onTop.description || `${appliedCoupons.onTop.value}% off ${appliedCoupons.onTop.category} items`
               }
             </span>
           </div>
           <button 
-            onClick={() => removeCoupon('category')} 
+            onClick={() => removeCoupon('onTop')} 
             className="text-gray-400 hover:text-gray-600"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -43,7 +42,6 @@ const CategoryCouponForm: React.FC = () => {
         </div>
       )}
       
-      {/* Warning message when points are being used */}
       {!canUseCategoryCoupon && (
         <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
           <div className="flex items-center">
@@ -57,8 +55,7 @@ const CategoryCouponForm: React.FC = () => {
         </div>
       )}
       
-      {/* Available Category Coupons */}
-      {!appliedCoupons.category && canUseCategoryCoupon && (
+      {!appliedCoupons.onTop && canUseCategoryCoupon && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {categoryCoupons.map((coupon) => {
             const isAvailable = availableCategoryCodes.includes(coupon.code);
@@ -78,12 +75,13 @@ const CategoryCouponForm: React.FC = () => {
                   <CategoryTag className="h-4 w-4 text-green-600 mr-2" />
                   <div>
                     <div className="text-sm font-medium">{coupon.code}</div>
+                    <div className="text-sm text-gray-900">({coupon.category})</div>
                     <div className="text-sm text-gray-500">
-                      {coupon.description || `${coupon.value}% off ${coupon.category} items`}
+                      {coupon.description}
                       {!isAvailable && (
                         <div className="flex items-center mt-1 text-xs text-gray-400">
                           <Info className="h-3 w-3 mr-1" />
-                          No matching items in cart
+                            cannot use
                         </div>
                       )}
                     </div>
@@ -98,4 +96,4 @@ const CategoryCouponForm: React.FC = () => {
   );
 };
 
-export default CategoryCouponForm; 
+export default OnTopCouponForm; 
