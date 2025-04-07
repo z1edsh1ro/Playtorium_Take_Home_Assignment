@@ -11,7 +11,15 @@ import { Link } from 'react-router-dom';
 import { specialCampaign } from '../data/specialCampaigns';
 
 const CartPage: React.FC = () => {
-  const { cart, subtotal, regularDiscount, categoryDiscount, pointsDiscount, seasonalDiscount, total } = useShop();
+  const { 
+    cart, 
+    subtotal, 
+    couponDiscount, 
+    onTopDiscount, 
+    pointsDiscount, 
+    seasonalDiscount, 
+    total 
+  } = useShop();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,27 +64,27 @@ const CartPage: React.FC = () => {
                     <span className="text-gray-600">Subtotal</span>
                     <span>{subtotal.toFixed(2)} THB</span>
                   </div>
-                  {regularDiscount > 0 && (
+                  {couponDiscount > 0 && (
                     <div className="flex justify-between text-red-600">
-                      <span>Regular Coupon Discount</span>
-                      <span>-{regularDiscount.toFixed(2)} THB</span>
+                      <span>Coupon Discount</span>
+                      <span>-{couponDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
-                  {categoryDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Category Coupon Discount</span>
-                      <span>-{categoryDiscount.toFixed(2)} THB</span>
+                  {onTopDiscount > 0 && (
+                    <div className="flex justify-between text-red-600">
+                      <span>On Top Coupon Discount</span>
+                      <span>-{onTopDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
                   {pointsDiscount > 0 && (
-                    <div className="flex justify-between text-blue-600">
+                    <div className="flex justify-between text-red-600">
                       <span>Points Discount</span>
                       <span>-{pointsDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
                   {seasonalDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Seasonal Campaign Discount</span>
+                    <div className="flex justify-between text-red-600">
+                      <span>Special Campaign Discount</span>
                       <span>-{seasonalDiscount.toFixed(2)} THB</span>
                     </div>
                   )}

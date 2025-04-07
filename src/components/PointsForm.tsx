@@ -8,16 +8,14 @@ const PointsForm: React.FC = () => {
   const [pointsToUse, setPointsToUse] = useState<string>('');
   
   const { 
-    points, 
+    points,
+    maxPointsDiscount,
     applyPoints, 
     resetPoints, 
     pointsDiscount, 
     canUsePoints, 
     subtotal 
   } = useShop();
-  
-  // Calculate maximum points that can be used (20% of subtotal)
-  const maxPointsDiscount = Math.floor(subtotal * 0.2);
   
   // If points can't be used and points are being used, reset points
   React.useEffect(() => {

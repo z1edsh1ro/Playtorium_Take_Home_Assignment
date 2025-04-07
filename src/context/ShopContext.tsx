@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, ReactNode, useMemo } from '
 import { Product, CartItem, Coupon, Points, AppliedCoupons } from '../types/shop';
 import { coupons } from '../data/coupons';
 import { specialCampaign } from '../data/specialCampaigns';
+import { customerPoints } from '../data/customerPoints';
+
 
 // Types
 interface ShopContextType {
@@ -18,13 +20,14 @@ interface ShopContextType {
   
   // Points operations
   points: Points;
+  maxPointsDiscount: number;
   applyPoints: (pointsToUse: number) => void;
   resetPoints: () => void;
   
   // Price calculations
   subtotal: number;
-  regularDiscount: number;
-  categoryDiscount: number;
+  couponDiscount: number;
+  onTopDiscount: number;
   pointsDiscount: number;
   seasonalDiscount: number;
   total: number;
@@ -113,18 +116,16 @@ const useCouponOperations = (points: Points, appliedCoupons: AppliedCoupons, set
   return { applyCoupon, removeCoupon };
 };
 
-const usePointsOperations = (subtotal: number) => {
-  const [points, setPoints] = useState<Points>({
-    available: 500,
-    pointsToUse: 0
-  });
+const usePointsOperations = (currentPrice: number) => {
+  const [points, setPoints] = useState<Points>(customerPoints);
+
+  // Calculate maximum points based on price after regular coupon (20% rule)
+  const maxPointsDiscount = Math.floor(currentPrice * 0.2);
 
   const applyPoints = (pointsToUse: number) => {
     // when point to use more than point available
     if (pointsToUse > points.available)
       return;
-
-    const maxPointsDiscount = Math.floor(subtotal * 0.2);
 
     // when point to use more than max point discount
     if (pointsToUse > maxPointsDiscount)
@@ -143,23 +144,21 @@ const usePointsOperations = (subtotal: number) => {
     }));
   };
 
-  return { points, applyPoints, resetPoints };
+  return { points, maxPointsDiscount, applyPoints, resetPoints };
 };
 
 const usePriceCalculations = (
   cart: CartItem[],
+  firstPriorityDiscount: number,
   appliedCoupons: AppliedCoupons,
   points: Points
 ) => {
-  // Calculate subtotal
-  const subtotal = useMemo(() => 
-    cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
-    [cart]
-  );
 
-  // Calculate category discount
-  const categoryDiscount = useMemo(() => {
-    if (!appliedCoupons.onTop) return 0;
+  // Calculate on top discount
+  const onTopDiscount = useMemo(() => {
+    // when not use on top
+    if (!appliedCoupons.onTop) 
+      return 0;
 
     const categoryItems = cart.filter(item => 
       item.product.category.toLowerCase() === appliedCoupons.onTop?.category.toLowerCase()
@@ -170,35 +169,33 @@ const usePriceCalculations = (
       0
     );
 
-    return categorySubtotal * (appliedCoupons.onTop.value / 100);
+    return categorySubtotal * (appliedCoupons.onTop.amount / 100);
   }, [cart, appliedCoupons.onTop]);
 
-  // Calculate regular discount
-  const regularDiscount = useMemo(() => {
-    if (!appliedCoupons.coupon) return 0;
+  // Points discount (1 point = 1 THB, capped at 20% of price after coupon)
+  const pointsDiscount = useMemo(() => {
+    return points.pointsToUse;
+  }, [points.pointsToUse]);
 
-    if (appliedCoupons.coupon.type === 'percentage') {
-      return subtotal * (appliedCoupons.coupon.value / 100);
-    }
-    
-    return appliedCoupons.coupon.value;
-  }, [subtotal, appliedCoupons.coupon]);
+  // Calculate remaining amount
+  const secondPriorityDiscount = firstPriorityDiscount - onTopDiscount - pointsDiscount;
 
-  // Calculate seasonal discount
+  // 3. Calculate seasonal campaign discount last
   const seasonalDiscount = useMemo(() => {
-    if (!specialCampaign.active) return 0;
-    const multiples = Math.floor(subtotal / specialCampaign.every);
-    return multiples * specialCampaign.discount;
-  }, [subtotal]);
+    // when special campaign is not active
+    if (!specialCampaign.active) 
+      return 0;
 
-  const pointsDiscount = points.pointsToUse;
-  const totalDiscount = regularDiscount + categoryDiscount + pointsDiscount + seasonalDiscount;
-  const total = Math.max(subtotal - totalDiscount, 0);
+    const multiples = Math.floor(secondPriorityDiscount / specialCampaign.every);
+    
+    return multiples * specialCampaign.discount;
+  }, [secondPriorityDiscount]);
+
+  // Calculate final total
+  const total = Math.max(secondPriorityDiscount - seasonalDiscount, 0);
 
   return {
-    subtotal,
-    regularDiscount,
-    categoryDiscount,
+    onTopDiscount,
     pointsDiscount,
     seasonalDiscount,
     total
@@ -212,9 +209,34 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     coupon: null,
     onTop: null
   });
-  const { points, applyPoints, resetPoints } = usePointsOperations(0);
+
+  // Calculate raw subtotal (before any discounts)
+  const subtotal = useMemo(() => 
+    cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+    [cart]
+  );
+
+  // calculate coupon discount
+  const couponDiscount = useMemo(() => {
+    // when not applied coupon
+    if (!appliedCoupons.coupon) 
+      return 0;
+
+    // when applied percentage coupon
+    if (appliedCoupons.coupon.type === 'percentage') {
+      return subtotal * (appliedCoupons.coupon.amount / 100);
+    }
+    
+    // when applied fixed amount coupon
+    return appliedCoupons.coupon.amount;
+  }, [subtotal, appliedCoupons.coupon]);
+
+  // first priority calculate remaining amount after use coupon
+  const firstPriorityDiscount = subtotal - couponDiscount;
+
+  const { points, maxPointsDiscount, applyPoints, resetPoints } = usePointsOperations(firstPriorityDiscount);
   const { applyCoupon, removeCoupon } = useCouponOperations(points, appliedCoupons, setAppliedCoupons);
-  const priceCalculations = usePriceCalculations(cart, appliedCoupons, points);
+  const priceCalculations = usePriceCalculations(cart, firstPriorityDiscount, appliedCoupons, points);
 
   // Availability checks
   const canUsePoints = appliedCoupons.onTop === null;
@@ -245,10 +267,13 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     // Points operations
     points,
+    maxPointsDiscount,
     applyPoints,
     resetPoints,
     
     // Price calculations
+    subtotal,
+    couponDiscount,
     ...priceCalculations,
     
     // Availability checks

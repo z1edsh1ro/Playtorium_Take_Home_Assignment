@@ -26,8 +26,8 @@ const CouponForm: React.FC = () => {
                 <span className="text-sm font-medium">{appliedCoupons.coupon.code}</span> - {
                   appliedCoupons.coupon.description || (
                     appliedCoupons.coupon.type === 'fixed' 
-                      ? `save ${appliedCoupons.coupon.value} THB` 
-                      : `save ${appliedCoupons.coupon.value}%`
+                      ? `save ${appliedCoupons.coupon.amount} THB` 
+                      : `save ${appliedCoupons.coupon.amount}%`
                   )
                 }
               </span>
@@ -59,7 +59,7 @@ const CouponForm: React.FC = () => {
                     <Percent className="h-4 w-4 text-red-600 mr-2" />
                     <div>
                       <div className="text-sm font-medium">{coupon.code}</div>
-                      <div className="text-sm text-gray-500">{coupon.description || `save ${coupon.value}%`}</div>
+                      <div className="text-sm text-gray-500">{coupon.description || `save ${coupon.amount}%`}</div>
                     </div>
                   </div>
                 </button>
@@ -81,7 +81,7 @@ const CouponForm: React.FC = () => {
                     <DollarSign className="h-4 w-4 text-red-600 mr-2" />
                     <div>
                       <div className="text-sm font-medium">{coupon.code}</div>
-                      <div className="text-sm text-gray-500">{coupon.description || `save ${coupon.value} THB`}</div>
+                      <div className="text-sm text-gray-500">{coupon.description || `save ${coupon.amount} THB`}</div>
                     </div>
                   </div>
                 </button>
