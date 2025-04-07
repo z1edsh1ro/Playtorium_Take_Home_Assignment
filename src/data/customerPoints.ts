@@ -1,4 +1,4 @@
-import { Points } from "../types/shop";
+import { Points } from "../types/cart";
 
 export const customerPoints: Points = {
   available: 500,

@@ -1,4 +1,4 @@
-import { SpecialCampaign } from "../types/shop";
+import { SpecialCampaign } from "../types/cart";
 
 export const specialCampaign: SpecialCampaign = {
   active: true,

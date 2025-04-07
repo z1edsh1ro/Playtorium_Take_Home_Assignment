@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
-import { Product, CartItem, Coupon, Points, AppliedCoupons } from '../types/shop';
+import { Product, CartItem, Coupon, Points, AppliedCoupons } from '../types/cart';
 import { coupons } from '../data/coupons';
 import { specialCampaign } from '../data/specialCampaigns';
 import { customerPoints } from '../data/customerPoints';

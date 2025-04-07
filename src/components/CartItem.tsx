@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CartItem as CartItemType } from '../types/shop';
+import { CartItem as CartItemType } from '../types/cart';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';

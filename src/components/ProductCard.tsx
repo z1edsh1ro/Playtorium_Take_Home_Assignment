@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Product } from '../types/shop';
+import { Product } from '../types/cart';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useShop } from '../context/ShopContext';

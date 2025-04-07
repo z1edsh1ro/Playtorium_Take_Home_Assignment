@@ -1,4 +1,4 @@
-import { Coupon } from "../types/shop";
+import { Coupon } from "../types/cart";
 
 export const coupons: Coupon[] = [
   {
