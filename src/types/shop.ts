@@ -24,13 +24,13 @@ export interface Points {
   pointsToUse: number;
 }
 
-export interface SeasonalCampaign {
+export interface SpecialCampaign {
   active: boolean;
-  threshold: number;
+  every: number;
   discount: number;
 }
 
 export interface AppliedCoupons {
-  regular: Coupon | null;
-  category: Coupon | null;
+  coupon: Coupon | null;
+  onTop: Coupon | null;
 }

@@ -27,7 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       </CardHeader>
       <CardContent className="pb-2 px-4 flex-grow">
         <p className="text-gray-500 text-sm mb-2">{product.category}</p>
-        <p className="font-bold text-lg">THB {product.price.toFixed(2)}</p>
+        <p className="font-bold text-lg">{product.price.toFixed(2)} THB</p>
       </CardContent>
       <CardFooter className="pt-0 pb-4 px-4">
         <Button 

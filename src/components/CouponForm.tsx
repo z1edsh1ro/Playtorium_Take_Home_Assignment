@@ -15,26 +15,25 @@ const CouponForm: React.FC = () => {
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
-      <h3 className="font-medium mb-3">Regular Coupons</h3>
+      <h3 className="font-medium mb-3">Coupons</h3>
       
-      {/* Applied Regular Coupon Display */}
       <div className="space-y-2 mb-4">
-        {appliedCoupons.regular && (
+        {appliedCoupons.coupon && (
           <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded p-3">
             <div className="flex items-center">
               <Tag className="h-4 w-4 text-red-600 mr-2" />
               <span className="text-sm">
-                <span className="text-sm font-medium">{appliedCoupons.regular.code}</span> - {
-                  appliedCoupons.regular.description || (
-                    appliedCoupons.regular.type === 'fixed' 
-                      ? `save THB ${appliedCoupons.regular.value}` 
-                      : `save ${appliedCoupons.regular.value}%`
+                <span className="text-sm font-medium">{appliedCoupons.coupon.code}</span> - {
+                  appliedCoupons.coupon.description || (
+                    appliedCoupons.coupon.type === 'fixed' 
+                      ? `save ${appliedCoupons.coupon.value} THB` 
+                      : `save ${appliedCoupons.coupon.value}%`
                   )
                 }
               </span>
             </div>
             <button 
-              onClick={() => removeCoupon('regular')} 
+              onClick={() => removeCoupon('coupon')} 
               className="text-gray-400 hover:text-gray-600"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -45,10 +44,8 @@ const CouponForm: React.FC = () => {
         )}
       </div>
       
-      {/* Available Regular Coupons */}
-      {!appliedCoupons.regular && (
+      {!appliedCoupons.coupon && (
         <div className="space-y-4">
-          {/* Percentage Discounts */}
           <div>
             <h4 className="text-sm font-medium text-gray-500 mb-2">Percentage Discounts</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -84,7 +81,7 @@ const CouponForm: React.FC = () => {
                     <DollarSign className="h-4 w-4 text-red-600 mr-2" />
                     <div>
                       <div className="text-sm font-medium">{coupon.code}</div>
-                      <div className="text-sm text-gray-500">{coupon.description || `save THB ${coupon.value}`}</div>
+                      <div className="text-sm text-gray-500">{coupon.description || `save ${coupon.value} THB`}</div>
                     </div>
                   </div>
                 </button>

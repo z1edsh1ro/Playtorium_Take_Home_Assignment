@@ -8,7 +8,7 @@ import { useShop } from '../context/ShopContext';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, ArrowLeft, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { seasonalCampaign } from '../data/campaigns';
+import { specialCampaign } from '../data/specialCampaigns';
 
 const CartPage: React.FC = () => {
   const { cart, subtotal, regularDiscount, categoryDiscount, pointsDiscount, seasonalDiscount, total } = useShop();
@@ -36,53 +36,53 @@ const CartPage: React.FC = () => {
               <div className="bg-white rounded-lg shadow p-6 sticky top-24">
                 <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
                 
-                {seasonalCampaign.active && (
-                  <div className="bg-green-50 border border-green-200 rounded p-3 mb-4 flex items-center">
-                    <Gift className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm text-green-700">
-                      Seasonal Campaign: Get THB {seasonalCampaign.discount} off for every THB {seasonalCampaign.threshold} spent!
-                    </span>
-                  </div>
-                )}
-                
                 <CouponForm />
                 
                 <CategoryCouponForm />
                 
                 <PointsForm />
                 
+                {specialCampaign.active && (
+                  <div className="bg-green-50 border border-green-200 rounded p-3 mb-4 flex items-center">
+                    <Gift className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm text-green-700">
+                      Special Campaign: Discount: {specialCampaign.discount} THB at every {specialCampaign.every} THB!
+                    </span>
+                  </div>
+                )}
+
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>THB {subtotal.toFixed(2)}</span>
+                    <span>{subtotal.toFixed(2)} THB</span>
                   </div>
                   {regularDiscount > 0 && (
                     <div className="flex justify-between text-red-600">
                       <span>Regular Coupon Discount</span>
-                      <span>-THB {regularDiscount.toFixed(2)}</span>
+                      <span>-{regularDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
                   {categoryDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Category Coupon Discount</span>
-                      <span>-THB {categoryDiscount.toFixed(2)}</span>
+                      <span>-{categoryDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
                   {pointsDiscount > 0 && (
                     <div className="flex justify-between text-blue-600">
                       <span>Points Discount</span>
-                      <span>-THB {pointsDiscount.toFixed(2)}</span>
+                      <span>-{pointsDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
                   {seasonalDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
                       <span>Seasonal Campaign Discount</span>
-                      <span>-THB {seasonalDiscount.toFixed(2)}</span>
+                      <span>-{seasonalDiscount.toFixed(2)} THB</span>
                     </div>
                   )}
                   <div className="flex justify-between font-bold text-lg pt-2 border-t">
                     <span>Total</span>
-                    <span>THB {total.toFixed(2)}</span>
+                    <span>{total.toFixed(2)} THB</span>
                   </div>
                 </div>
                 
@@ -96,8 +96,7 @@ const CartPage: React.FC = () => {
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <ShoppingBag className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h2 className="text-2xl font-medium mb-2">Your cart is empty</h2>
-            <p className="text-gray-500 mb-6">Looks like you haven't added anything to your cart yet.</p>
-            <Link to="/">
+              <Link to="/">
               <Button className="bg-red-600 hover:bg-red-700">
                 Continue Shopping
               </Button>

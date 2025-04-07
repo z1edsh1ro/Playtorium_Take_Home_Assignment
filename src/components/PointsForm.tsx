@@ -53,7 +53,7 @@ const PointsForm: React.FC = () => {
           <div className="flex items-center">
             <BadgePercent className="h-4 w-4 text-green-600 mr-2" />
             <span className="text-sm">
-              <span className="font-medium">{points.pointsToUse} points</span> - THB {pointsDiscount.toFixed(2)} discount applied
+              <span className="font-medium">{points.pointsToUse} points</span> - {pointsDiscount.toFixed(2)} THB discount applied
             </span>
           </div>
           <Button variant="ghost" size="sm" onClick={resetPoints} className="h-8 w-8 p-0">

@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import { Product, CartItem, Coupon, Points, AppliedCoupons } from '../types/shop';
 import { coupons } from '../data/coupons';
-import { seasonalCampaign } from '../data/campaigns';
-import { toast } from 'sonner';
+import { specialCampaign } from '../data/specialCampaigns';
 
 interface ShopContextType {
   cart: CartItem[];
@@ -11,7 +10,7 @@ interface ShopContextType {
   updateQuantity: (productId: number, quantity: number) => void;
   appliedCoupons: AppliedCoupons;
   applyCoupon: (code: string) => boolean;
-  removeCoupon: (type: 'regular' | 'category') => void;
+  removeCoupon: (type: 'coupon' | 'category') => void;
   points: Points;
   applyPoints: (pointsToUse: number) => void;
   resetPoints: () => void;
@@ -31,8 +30,8 @@ const ShopContext = createContext<ShopContextType | undefined>(undefined);
 export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [appliedCoupons, setAppliedCoupons] = useState<AppliedCoupons>({
-    regular: null,
-    category: null
+    coupon: null,
+    onTop: null
   });
   const [points, setPoints] = useState<Points>({
     available: 500, // Example: Start with 500 points
@@ -51,7 +50,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       return [...prevCart, { product, quantity: 1 }];
     });
-    toast.success(`Added ${product.name} to cart`);
   };
 
   const removeFromCart = (productId: number) => {
@@ -74,16 +72,14 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const applyCoupon = (code: string): boolean => {
     const coupon = coupons.find(c => c.code === code);
     if (!coupon) {
-      toast.error('Invalid coupon code');
       return false;
     }
 
     // Check if the coupon is already applied
     if (
-      (coupon.type === 'category' && appliedCoupons.category?.code === code) ||
-      ((coupon.type === 'percentage' || coupon.type === 'fixed') && appliedCoupons.regular?.code === code)
+      (coupon.type === 'category' && appliedCoupons.onTop?.code === code) ||
+      ((coupon.type === 'percentage' || coupon.type === 'fixed') && appliedCoupons.coupon?.code === code)
     ) {
-      toast.error('This coupon is already applied');
       return false;
     }
 
@@ -91,63 +87,46 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (coupon.type === 'category') {
       // If points are being used, prevent applying category coupon
       if (points.pointsToUse > 0) {
-        toast.error('Category coupons cannot be used with reward points');
         return false;
       }
       
-      // If there's already a category coupon, remove it first
-      if (appliedCoupons.category) {
-        toast.info(`Replacing ${appliedCoupons.category.code} with ${code}`);
-      }
-      
       setAppliedCoupons(prev => ({
         ...prev,
-        category: coupon
+        onTop: coupon
       }));
-      
-      toast.success(`Applied category coupon: ${code} (${coupon.value}% off ${coupon.category} items)`);
-    } else {
-      // If there's already a regular coupon, remove it first
-      if (appliedCoupons.regular) {
-        toast.info(`Replacing ${appliedCoupons.regular.code} with ${code}`);
-      }
-      
+    } else {      
       setAppliedCoupons(prev => ({
         ...prev,
-        regular: coupon
+        coupon: coupon
       }));
       
       const discountText = coupon.type === 'percentage' 
         ? `${coupon.value}% off` 
-        : `THB ${coupon.value} off`;
+        : `${coupon.value} off THB`;
       
-      toast.success(`Applied coupon: ${code} (${discountText})`);
     }
     
     return true;
   };
 
-  const removeCoupon = (type: 'regular' | 'category') => {
+  const removeCoupon = (type: 'coupon' | 'category') => {
     setAppliedCoupons(prev => ({
       ...prev,
       [type]: null
     }));
     
-    toast.info(`Removed ${type} coupon`);
   };
 
   const applyPoints = (pointsToUse: number) => {
     // If a category coupon is applied, remove it first
-    if (appliedCoupons.category) {
+    if (appliedCoupons.onTop) {
       setAppliedCoupons(prev => ({
         ...prev,
         category: null
       }));
-      toast.info('Category coupon has been removed as it cannot be used with reward points');
     }
     
     if (pointsToUse > points.available) {
-      toast.error(`You only have ${points.available} points available`);
       return;
     }
     
@@ -157,7 +136,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // If points to use would exceed 20% of subtotal, limit it
     if (pointsToUse > maxPointsDiscount) {
       const limitedPoints = Math.floor(maxPointsDiscount);
-      toast.info(`Points limited to ${limitedPoints} (20% of total price)`);
       setPoints(prev => ({
         ...prev,
         pointsToUse: limitedPoints
@@ -169,7 +147,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }));
     }
     
-    toast.success(`Applied ${points.pointsToUse} points to your order`);
   };
 
   const resetPoints = () => {
@@ -177,7 +154,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ...prev,
       pointsToUse: 0
     }));
-    toast.info('Removed points discount');
   };
 
   const subtotal = cart.reduce(
@@ -187,18 +163,18 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Calculate category-based discount
   const calculateCategoryDiscount = () => {
-    if (!appliedCoupons.category) {
+    if (!appliedCoupons.onTop) {
       return 0;
     }
 
     // Find items in the cart that match the category
     const categoryItems = cart.filter(item => 
-      item.product.category.toLowerCase() === appliedCoupons.category?.category.toLowerCase()
+      item.product.category.toLowerCase() === appliedCoupons.onTop?.category.toLowerCase()
     );
 
     // Debug log for category discount calculation
     console.log('Category discount calculation:', {
-      appliedCategory: appliedCoupons.category.category,
+      appliedCategory: appliedCoupons.onTop.category,
       categoryItems: categoryItems.map(item => ({
         name: item.product.name,
         category: item.product.category,
@@ -218,36 +194,36 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 
     // Calculate discount based on percentage
-    const discount = categorySubtotal * (appliedCoupons.category.value / 100);
+    const discount = categorySubtotal * (appliedCoupons.onTop.value / 100);
     
     console.log('Category discount result:', {
       categorySubtotal,
-      discountPercentage: appliedCoupons.category.value,
+      discountPercentage: appliedCoupons.onTop.value,
       calculatedDiscount: discount
     });
 
     return discount;
   };
 
-  // Calculate regular discount (percentage or fixed)
+  // Calculate coupon discount (percentage or fixed)
   const calculateRegularDiscount = () => {
-    if (!appliedCoupons.regular) {
+    if (!appliedCoupons.coupon) {
       return 0;
     }
 
     let discount = 0;
     
-    if (appliedCoupons.regular.type === 'percentage') {
+    if (appliedCoupons.coupon.type === 'percentage') {
       // For percentage discounts, apply to the entire subtotal
-      discount = subtotal * (appliedCoupons.regular.value / 100);
-    } else if (appliedCoupons.regular.type === 'fixed') {
+      discount = subtotal * (appliedCoupons.coupon.value / 100);
+    } else if (appliedCoupons.coupon.type === 'fixed') {
       // For fixed discounts, use the exact value
-      discount = appliedCoupons.regular.value;
+      discount = appliedCoupons.coupon.value;
     }
     
     console.log('Regular discount calculation:', {
-      couponType: appliedCoupons.regular.type,
-      couponValue: appliedCoupons.regular.value,
+      couponType: appliedCoupons.coupon.type,
+      couponValue: appliedCoupons.coupon.value,
       subtotal,
       calculatedDiscount: discount
     });
@@ -257,21 +233,21 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Calculate seasonal campaign discount
   const calculateSeasonalDiscount = () => {
-    if (!seasonalCampaign.active) {
+    if (!specialCampaign.active) {
       return 0;
     }
 
-    // Calculate how many multiples of the threshold are in the subtotal
-    const multiples = Math.floor(subtotal / seasonalCampaign.threshold);
+    // Calculate how many multiples of the every are in the subtotal
+    const multiples = Math.floor(subtotal / specialCampaign.every);
     
     // Calculate the total discount based on multiples
-    const discount = multiples * seasonalCampaign.discount;
+    const discount = multiples * specialCampaign.discount;
     
     console.log('Seasonal discount calculation:', {
       subtotal,
-      threshold: seasonalCampaign.threshold,
+      every: specialCampaign.every,
       multiples,
-      discountPerMultiple: seasonalCampaign.discount,
+      discountPerMultiple: specialCampaign.discount,
       calculatedDiscount: discount
     });
     
@@ -305,7 +281,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   
   // Determine if points can be used (not when category coupon is applied)
-  const canUsePoints = appliedCoupons.category === null;
+  const canUsePoints = appliedCoupons.onTop === null;
   
   // Determine if category coupons can be used (not when points are being used)
   const canUseCategoryCoupon = points.pointsToUse === 0;

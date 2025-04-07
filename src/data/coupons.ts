@@ -17,13 +17,13 @@ export const coupons: Coupon[] = [
     code: "FIXED50",
     type: "fixed",
     value: 50,
-    description: "THB 50 off your entire order"
+    description: "50 THB off your entire order"
   },
   {
     code: "FIXED100",
     type: "fixed",
     value: 100,
-    description: "THB 100 off your entire order"
+    description: "100 THB off your entire order"
   },
   {
     code: "FOOD20",
