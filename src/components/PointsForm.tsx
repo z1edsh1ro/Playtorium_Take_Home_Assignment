@@ -35,6 +35,7 @@ const PointsForm: React.FC = () => {
     }
     
     const numPoints = parseInt(pointsToUse, 10);
+
     if (!isNaN(numPoints) && numPoints > 0) {
       applyPoints(numPoints);
       setPointsToUse('');

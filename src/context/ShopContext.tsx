@@ -113,21 +113,26 @@ const useCouponOperations = (points: Points, appliedCoupons: AppliedCoupons, set
   return { applyCoupon, removeCoupon };
 };
 
-const usePointsOperations = (subtotal: number, setAppliedCoupons: React.Dispatch<React.SetStateAction<AppliedCoupons>>) => {
+const usePointsOperations = (subtotal: number) => {
   const [points, setPoints] = useState<Points>({
     available: 500,
     pointsToUse: 0
   });
 
   const applyPoints = (pointsToUse: number) => {
-    if (pointsToUse > points.available) return;
-    
-    const maxPointsDiscount = subtotal * 0.2;
-    const limitedPoints = Math.min(pointsToUse, Math.floor(maxPointsDiscount));
+    // when point to use more than point available
+    if (pointsToUse > points.available)
+      return;
+
+    const maxPointsDiscount = Math.floor(subtotal * 0.2);
+
+    // when point to use more than max point discount
+    if (pointsToUse > maxPointsDiscount)
+      return;
     
     setPoints(prev => ({
       ...prev,
-      pointsToUse: limitedPoints
+      pointsToUse: pointsToUse
     }));
   };
 
@@ -207,7 +212,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     coupon: null,
     onTop: null
   });
-  const { points, applyPoints, resetPoints } = usePointsOperations(0, setAppliedCoupons);
+  const { points, applyPoints, resetPoints } = usePointsOperations(0);
   const { applyCoupon, removeCoupon } = useCouponOperations(points, appliedCoupons, setAppliedCoupons);
   const priceCalculations = usePriceCalculations(cart, appliedCoupons, points);
 
