@@ -46,7 +46,7 @@ const useCartOperations = () => {
   return { cart, addToCart, removeFromCart, updateQuantity };
 };
 
-const useCouponOperations = (appliedCoupons: AppliedCoupons, setAppliedCoupons: React.Dispatch<React.SetStateAction<AppliedCoupons>>) => {
+const useCouponOperations = (points: Points, resetPoints: () => void, appliedCoupons: AppliedCoupons, setAppliedCoupons: React.Dispatch<React.SetStateAction<AppliedCoupons>>) => {
   const applyCoupon = (code: string): boolean => {
     const coupon = coupons.find(coupon => coupon.code === code);
 
@@ -57,6 +57,11 @@ const useCouponOperations = (appliedCoupons: AppliedCoupons, setAppliedCoupons: 
     // when both coupon type is already applied
     if (appliedCoupons.coupon !== null && appliedCoupons.onTop !== null) {
       return false;
+    }
+
+    // when coupons type is on top or already applied, just reset price
+    if (points.pointsToUse > 0){
+      resetPoints();
     }
 
     // when coupons type is not on top
@@ -225,7 +230,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     coupon: null,
     onTop: null
   });
-  const { applyCoupon, removeCoupon } = useCouponOperations(appliedCoupons, setAppliedCoupons);
 
   // Calculate raw subtotal (before any discounts)
   const subtotal = useMemo(() => 
@@ -234,6 +238,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 
   const { points, couponDiscount, maxPointsDiscount, applyPoints, resetPoints } = usePointsOperations(subtotal, appliedCoupons);
+
+  const { applyCoupon, removeCoupon } = useCouponOperations(points, resetPoints, appliedCoupons, setAppliedCoupons);
 
   const isUsePoints = (appliedCoupons.onTop === null);
   const isUseOnTopCoupon = (points.pointsToUse === 0);
