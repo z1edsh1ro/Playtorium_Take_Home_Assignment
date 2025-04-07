@@ -2,55 +2,55 @@ import { Coupon } from "../types/shop";
 
 export const coupons: Coupon[] = [
   {
-    code: "SAVE10",
+    code: "PLAYTORIUM1",
     type: "percentage",
     value: 10,
-    description: "10% off your entire order"
+    description: "discount 10%"
   },
   {
-    code: "SAVE20",
+    code: "PLAYTORIUM2",
     type: "percentage",
     value: 20,
-    description: "20% off your entire order"
+    description: "discount 20%"
   },
   {
-    code: "FIXED50",
+    code: "PLAYTORIUM3",
     type: "fixed",
     value: 50,
-    description: "50 THB off your entire order"
+    description: "discount 50 THB"
   },
   {
-    code: "FIXED100",
+    code: "PLAYTORIUM4",
     type: "fixed",
     value: 100,
-    description: "100 THB off your entire order"
+    description: "discount 100 THB"
   },
   {
-    code: "FOOD20",
+    code: "PLAYTORIUM5",
     type: "category",
     value: 20,
     category: "food",
-    description: "20% off all food items"
+    description: "discount 20% food category"
   },
   {
-    code: "ELECTRONICS15",
+    code: "PLAYTORIUM6",
     type: "category",
     value: 15,
     category: "electronics",
-    description: "15% off all electronics"
+    description: "discount 15% electronics category"
   },
   {
-    code: "CLOTHING25",
+    code: "PLAYTORIUM7",
     type: "category",
     value: 25,
     category: "clothing",
-    description: "25% off all clothing items"
+    description: "discount 25% clothing category"
   },
   {
-    code: "ACCESSORIES10",
+    code: "PLAYTORIUM8",
     type: "category",
     value: 10,
     category: "accessories",
-    description: "10% off all accessories"
+    description: "discount 10% accessories category"
   }
 ];
