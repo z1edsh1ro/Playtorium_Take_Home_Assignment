@@ -105,7 +105,7 @@ export interface ShopContextType {
   total: number;
   
   // Availability checks
-  canUsePoints: boolean;
-  canUseCategoryCoupon: boolean;
+  isUsePoints: boolean;
+  isUseOnTopCoupon: boolean;
   availableOnTopCoupons: Coupon[];
 }

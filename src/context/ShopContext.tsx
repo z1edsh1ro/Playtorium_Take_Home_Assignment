@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
-import { Product, CartItem, Coupon, Points, AppliedCoupons } from '../types/cart';
+import { Product, CartItem, Points, AppliedCoupons } from '../types/cart';
 import { coupons } from '../data/coupons';
 import { specialCampaign } from '../data/specialCampaigns';
 import { customerPoints } from '../data/customerPoints';
@@ -46,7 +46,7 @@ const useCartOperations = () => {
   return { cart, addToCart, removeFromCart, updateQuantity };
 };
 
-const useCouponOperations = (points: Points, appliedCoupons: AppliedCoupons, setAppliedCoupons: React.Dispatch<React.SetStateAction<AppliedCoupons>>) => {
+const useCouponOperations = (appliedCoupons: AppliedCoupons, setAppliedCoupons: React.Dispatch<React.SetStateAction<AppliedCoupons>>) => {
   const applyCoupon = (code: string): boolean => {
     const coupon = coupons.find(coupon => coupon.code === code);
 
@@ -65,10 +65,6 @@ const useCouponOperations = (points: Points, appliedCoupons: AppliedCoupons, set
       return true;
     }
 
-    // when coupons type is on top, cannot use point
-    if (points.pointsToUse > 0) 
-      return false;
-
     setAppliedCoupons(prev => ({ ...prev, onTop: coupon }));
     return true;
   };
@@ -83,10 +79,27 @@ const useCouponOperations = (points: Points, appliedCoupons: AppliedCoupons, set
   return { applyCoupon, removeCoupon };
 };
 
-const usePointsOperations = (currentPrice: number) => {
+const usePointsOperations = (subtotal: number, appliedCoupons: AppliedCoupons) => {
   const [points, setPoints] = useState<Points>(customerPoints);
 
-  // Calculate maximum points based on price after regular coupon (20% rule)
+    // calculate coupon discount
+    const couponDiscount = useMemo(() => {
+      // when not applied coupon
+      if (!appliedCoupons.coupon) 
+        return 0;
+  
+      // when applied percentage coupon
+      if (appliedCoupons.coupon.type === 'percentage') {
+        return subtotal * (appliedCoupons.coupon.amount / 100);
+      }
+      
+      // when applied fixed amount coupon
+      return appliedCoupons.coupon.amount;
+    }, [subtotal, appliedCoupons]);
+  
+    const currentPrice = subtotal - couponDiscount;
+
+  // Calculate maximum points based on price after use coupon (20% rule)
   const maxPointsDiscount = Math.floor(currentPrice * 0.2);
 
   const applyPoints = (pointsToUse: number) => {
@@ -111,41 +124,77 @@ const usePointsOperations = (currentPrice: number) => {
     }));
   };
 
-  return { points, maxPointsDiscount, applyPoints, resetPoints };
+  return { points, couponDiscount, maxPointsDiscount, applyPoints, resetPoints };
 };
 
 const usePriceCalculations = (
   cart: CartItem[],
-  firstPriorityDiscount: number,
+  subtotal: number,
   appliedCoupons: AppliedCoupons,
   points: Points
 ) => {
 
-  // Calculate on top discount
-  const onTopDiscount = useMemo(() => {
-    // when not use on top
-    if (!appliedCoupons.onTop) 
+  // first priority
+  const couponDiscount = useMemo(() => {
+    // when not applied coupon
+    if (!appliedCoupons.coupon) 
       return 0;
 
+    // when applied percentage coupon
+    if (appliedCoupons.coupon && appliedCoupons.coupon.type === 'percentage') {
+      return subtotal * (appliedCoupons.coupon.amount / 100);
+    }
+
+    // when applied fixed amount coupon
+    return appliedCoupons.coupon.amount
+  }, [subtotal, appliedCoupons]);
+
+  // Calculate remaining amount
+  const firstPriorityDiscount = subtotal - couponDiscount;
+
+  const onTopDiscount = useMemo(() => {
+    // when not applied on top coupon
+    if (!appliedCoupons.onTop)
+      return 0;
+
+    // find product is match category of on top coupon
     const categoryItems = cart.filter(item => 
-      item.product.category.toLowerCase() === appliedCoupons.onTop?.category.toLowerCase()
+      item.product.category.toLowerCase() === appliedCoupons.onTop.category.toLowerCase()
     );
 
+    // summary of product is match category of on top coupon
     const categorySubtotal = categoryItems.reduce(
       (sum, item) => sum + item.product.price * item.quantity,
       0
     );
+    
+    let currentPrice = categorySubtotal;
+    
+    // when applied coupon and fixed type
+    if (appliedCoupons.coupon && appliedCoupons.coupon.type === 'fixed') {
+      const quantity = cart.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
 
-    return categorySubtotal * (appliedCoupons.onTop.amount / 100);
-  }, [cart, appliedCoupons.onTop]);
+      currentPrice -= (categoryItems[0].quantity * Math.floor(appliedCoupons.coupon.amount / quantity));
+    }
 
-  // Points discount (1 point = 1 THB, capped at 20% of price after coupon)
+    // when applied coupon and percentage type
+    if (appliedCoupons.coupon && appliedCoupons.coupon.type === 'percentage') {
+      currentPrice -= (currentPrice * (appliedCoupons.coupon.amount / 100));
+    }
+
+    return  currentPrice * (appliedCoupons.onTop.amount / 100)
+  }, [cart, appliedCoupons])
+
+  // Points discount
   const pointsDiscount = useMemo(() => {
     return points.pointsToUse;
   }, [points.pointsToUse]);
 
   // Calculate remaining amount
-  const secondPriorityDiscount = firstPriorityDiscount - onTopDiscount - pointsDiscount;
+  const secondPriorityDiscount = firstPriorityDiscount - pointsDiscount - onTopDiscount;
 
   // 3. Calculate seasonal campaign discount last
   const seasonalDiscount = useMemo(() => {
@@ -176,6 +225,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     coupon: null,
     onTop: null
   });
+  const { applyCoupon, removeCoupon } = useCouponOperations(appliedCoupons, setAppliedCoupons);
 
   // Calculate raw subtotal (before any discounts)
   const subtotal = useMemo(() => 
@@ -183,33 +233,11 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     [cart]
   );
 
-  // calculate coupon discount
-  const couponDiscount = useMemo(() => {
-    // when not applied coupon
-    if (!appliedCoupons.coupon) 
-      return 0;
+  const { points, couponDiscount, maxPointsDiscount, applyPoints, resetPoints } = usePointsOperations(subtotal, appliedCoupons);
 
-    // when applied percentage coupon
-    if (appliedCoupons.coupon.type === 'percentage') {
-      return subtotal * (appliedCoupons.coupon.amount / 100);
-    }
-    
-    // when applied fixed amount coupon
-    return appliedCoupons.coupon.amount;
-  }, [subtotal, appliedCoupons.coupon]);
+  const isUsePoints = (appliedCoupons.onTop === null);
+  const isUseOnTopCoupon = (points.pointsToUse === 0);
 
-  // first priority calculate remaining amount after use coupon
-  const firstPriorityDiscount = subtotal - couponDiscount;
-
-  const { points, maxPointsDiscount, applyPoints, resetPoints } = usePointsOperations(firstPriorityDiscount);
-  const { applyCoupon, removeCoupon } = useCouponOperations(points, appliedCoupons, setAppliedCoupons);
-  const priceCalculations = usePriceCalculations(cart, firstPriorityDiscount, appliedCoupons, points);
-
-  // Availability checks
-  const canUsePoints = appliedCoupons.onTop === null;
-  const canUseCategoryCoupon = (points.pointsToUse === 0);
-
-  // Available on top coupons
   const availableOnTopCoupons = useMemo(() => {
     const onTopCoupons = coupons.filter(coupon => coupon.type === 'onTop');
 
@@ -219,6 +247,9 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       cartCategories.includes(coupon.category.toLowerCase())
     );
   }, [cart]);
+
+  // calculate total price
+  const priceCalculations = usePriceCalculations(cart, subtotal, appliedCoupons, points);
 
   const value = {
     // Cart operations
@@ -244,8 +275,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ...priceCalculations,
     
     // Availability checks
-    canUsePoints,
-    canUseCategoryCoupon,
+    isUsePoints,
+    isUseOnTopCoupon,
     availableOnTopCoupons
   };
 

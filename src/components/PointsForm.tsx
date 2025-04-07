@@ -13,22 +13,21 @@ const PointsForm: React.FC = () => {
     applyPoints, 
     resetPoints, 
     pointsDiscount, 
-    canUsePoints, 
-    subtotal 
+    isUsePoints, 
   } = useShop();
   
   // If points can't be used and points are being used, reset points
   React.useEffect(() => {
-    if (!canUsePoints && points.pointsToUse > 0) {
+    if (!isUsePoints && points.pointsToUse > 0) {
       resetPoints();
     }
-  }, [canUsePoints, points.pointsToUse, resetPoints]);
+  }, [isUsePoints, points.pointsToUse, resetPoints]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Prevent applying points if points can't be used
-    if (!canUsePoints) {
+    if (!isUsePoints) {
       return;
     }
     
@@ -44,7 +43,7 @@ const PointsForm: React.FC = () => {
     <div className="bg-gray-50 p-4 rounded-lg mb-4">
       <h3 className="font-medium mb-2">Use Points</h3>
       
-      {!canUsePoints && (
+      {!isUsePoints && (
         <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
           <div className="flex items-center">
             <AlertCircle className="h-4 w-4 text-yellow-600 mr-2" />
@@ -77,11 +76,11 @@ const PointsForm: React.FC = () => {
             className="flex-1"
             min="1"
             max={Math.min(points.available, maxPointsDiscount).toString()}
-            disabled={!canUsePoints}
+            disabled={!isUsePoints}
           />
           <Button 
             type="submit" 
-            disabled={!pointsToUse.trim() || parseInt(pointsToUse, 10) <= 0 || !canUsePoints}
+            disabled={!pointsToUse.trim() || parseInt(pointsToUse, 10) <= 0 || !isUsePoints}
           >
             Apply
           </Button>

@@ -8,7 +8,7 @@ const OnTopCouponForm: React.FC = () => {
     applyCoupon, 
     appliedCoupons, 
     removeCoupon, 
-    canUseCategoryCoupon,
+    isUseOnTopCoupon,
     availableOnTopCoupons
   } = useShop();
 
@@ -42,7 +42,7 @@ const OnTopCouponForm: React.FC = () => {
         </div>
       )}
       
-      {!canUseCategoryCoupon && (
+      {!isUseOnTopCoupon && (
         <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -55,7 +55,7 @@ const OnTopCouponForm: React.FC = () => {
         </div>
       )}
       
-      {!appliedCoupons.onTop && canUseCategoryCoupon && (
+      {!appliedCoupons.onTop && isUseOnTopCoupon && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {categoryCoupons.map((coupon) => {
             const isAvailable = availableCategoryCodes.includes(coupon.code);
