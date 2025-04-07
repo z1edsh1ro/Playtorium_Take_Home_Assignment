@@ -3,40 +3,7 @@ import { Product, CartItem, Coupon, Points, AppliedCoupons } from '../types/cart
 import { coupons } from '../data/coupons';
 import { specialCampaign } from '../data/specialCampaigns';
 import { customerPoints } from '../data/customerPoints';
-
-
-// Types
-interface ShopContextType {
-  // Cart operations
-  cart: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
-  
-  // Coupon operations
-  appliedCoupons: AppliedCoupons;
-  applyCoupon: (code: string) => boolean;
-  removeCoupon: (type: 'coupon' | 'onTop') => void;
-  
-  // Points operations
-  points: Points;
-  maxPointsDiscount: number;
-  applyPoints: (pointsToUse: number) => void;
-  resetPoints: () => void;
-  
-  // Price calculations
-  subtotal: number;
-  couponDiscount: number;
-  onTopDiscount: number;
-  pointsDiscount: number;
-  seasonalDiscount: number;
-  total: number;
-  
-  // Availability checks
-  canUsePoints: boolean;
-  canUseCategoryCoupon: boolean;
-  availableOnTopCoupons: Coupon[];
-}
+import { ShopContextType } from '../types/cart';
 
 // Create context
 const ShopContext = createContext<ShopContextType | undefined>(undefined);

@@ -1,13 +1,9 @@
 
 import React from 'react';
-import { CartItem as CartItemType } from '../types/cart';
+import { CartItemProps } from '../types/cart';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-
-interface CartItemProps {
-  item: CartItemType;
-}
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const { updateQuantity, removeFromCart } = useShop();
