@@ -51,9 +51,9 @@ const CartPage: React.FC = () => {
                 <PointsForm />
                 
                 {specialCampaign.active && (
-                  <div className="bg-green-50 border border-green-200 rounded p-3 mb-4 flex items-center">
-                    <Gift className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm text-green-700">
+                  <div className="bg-red-50 border border-red-200 rounded p-3 mb-4 flex items-center">
+                    <Gift className="h-4 w-4 text-red-600 mr-2" />
+                    <span className="text-sm text-red-700">
                       Special Campaign: Discount: {specialCampaign.discount} THB at every {specialCampaign.every} THB!
                     </span>
                   </div>

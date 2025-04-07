@@ -22,9 +22,9 @@ const OnTopCouponForm: React.FC = () => {
       <h3 className="font-medium mb-3">On Top Coupons</h3>
       
       {appliedCoupons.onTop && (
-        <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded p-3 mb-4">
+        <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded p-3 mb-4">
           <div className="flex items-center">
-            <CategoryTag className="h-4 w-4 text-green-600 mr-2" />
+            <CategoryTag className="h-4 w-4 text-red-600 mr-2" />
             <span className="text-sm">
               <span className="text-sm font-medium">{appliedCoupons.onTop.code}</span> - {
                 appliedCoupons.onTop.description || `${appliedCoupons.onTop.amount}% off ${appliedCoupons.onTop.category} items`
@@ -66,13 +66,13 @@ const OnTopCouponForm: React.FC = () => {
                 onClick={() => isAvailable && applyCoupon(coupon.code)}
                 className={`flex items-center justify-between p-3 bg-white border rounded-lg transition-colors ${
                   isAvailable 
-                    ? 'border-gray-200 hover:border-green-300 hover:bg-green-50' 
+                    ? 'border-gray-200 hover:border-red-300 hover:bg-red-50' 
                     : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-60'
                 }`}
                 disabled={!isAvailable}
               >
                 <div className="flex items-center">
-                  <CategoryTag className="h-4 w-4 text-green-600 mr-2" />
+                  <CategoryTag className="h-4 w-4 text-red-600 mr-2" />
                   <div>
                     <div className="text-sm font-medium">{coupon.code}</div>
                     <div className="text-sm text-gray-900">({coupon.category})</div>

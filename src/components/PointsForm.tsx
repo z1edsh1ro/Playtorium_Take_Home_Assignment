@@ -56,9 +56,9 @@ const PointsForm: React.FC = () => {
       )}
       
       {points.pointsToUse > 0 ? (
-        <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded p-3">
+        <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded p-3">
           <div className="flex items-center">
-            <BadgePercent className="h-4 w-4 text-green-600 mr-2" />
+            <BadgePercent className="h-4 w-4 text-red-600 mr-2" />
             <span className="text-sm">
               <span className="font-medium">{points.pointsToUse} points</span> - {pointsDiscount.toFixed(2)} THB discount applied
             </span>
