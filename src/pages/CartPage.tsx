@@ -1,16 +1,17 @@
-
 import React from 'react';
 import Navbar from '../components/Navbar';
 import CartItem from '../components/CartItem';
 import CouponForm from '../components/CouponForm';
+import CategoryCouponForm from '../components/CategoryCouponForm';
 import PointsForm from '../components/PointsForm';
 import { useShop } from '../context/ShopContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { seasonalCampaign } from '../data/campaigns';
 
 const CartPage: React.FC = () => {
-  const { cart, subtotal, discount, pointsDiscount, total } = useShop();
+  const { cart, subtotal, regularDiscount, categoryDiscount, pointsDiscount, seasonalDiscount, total } = useShop();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -35,7 +36,19 @@ const CartPage: React.FC = () => {
               <div className="bg-white rounded-lg shadow p-6 sticky top-24">
                 <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
                 
+                {seasonalCampaign.active && (
+                  <div className="bg-green-50 border border-green-200 rounded p-3 mb-4 flex items-center">
+                    <Gift className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm text-green-700">
+                      Seasonal Campaign: Get THB {seasonalCampaign.discount} off for every THB {seasonalCampaign.threshold} spent!
+                    </span>
+                  </div>
+                )}
+                
                 <CouponForm />
+                
+                <CategoryCouponForm />
+                
                 <PointsForm />
                 
                 <div className="space-y-2 mb-4">
@@ -43,16 +56,28 @@ const CartPage: React.FC = () => {
                     <span className="text-gray-600">Subtotal</span>
                     <span>THB {subtotal.toFixed(2)}</span>
                   </div>
-                  {discount > 0 && (
+                  {regularDiscount > 0 && (
+                    <div className="flex justify-between text-red-600">
+                      <span>Regular Coupon Discount</span>
+                      <span>-THB {regularDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {categoryDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
-                      <span>Coupon Discount</span>
-                      <span>-THB {discount.toFixed(2)}</span>
+                      <span>Category Coupon Discount</span>
+                      <span>-THB {categoryDiscount.toFixed(2)}</span>
                     </div>
                   )}
                   {pointsDiscount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-blue-600">
                       <span>Points Discount</span>
                       <span>-THB {pointsDiscount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {seasonalDiscount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Seasonal Campaign Discount</span>
+                      <span>-THB {seasonalDiscount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between font-bold text-lg pt-2 border-t">
